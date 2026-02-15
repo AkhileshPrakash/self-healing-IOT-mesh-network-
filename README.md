@@ -1,4 +1,4 @@
-# Self-Healing IoT Mesh Network Simulation
+# Self-Healing IoT Mesh Network Simulation:
 
 ![Network Simulation](images/preview.png)
 
