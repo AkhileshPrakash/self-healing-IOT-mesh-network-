@@ -1,75 +1,135 @@
-# Self-Healing IoT Mesh Network Simulation:
+# 🌐 Self-Healing IoT Mesh Network Simulation
 
-![Network Simulation](images/preview.png)
+![Hero](images/hero.png)
 
-A comprehensive simulation of a decentralized, self-healing IoT mesh network. This project visualizes how independent nodes can communicate, discover routes, and maintain connectivity even when individual nodes fail or move.
+> A decentralized communication system where nodes **discover**, **connect**, and **recover automatically** when failures occur.
 
-## 🚀 Features
+This project demonstrates how disaster-ready IoT devices can maintain communication **without internet or cellular infrastructure**.
 
-### Core Simulation
-- **Self-Healing Connectivity**: Nodes automatically reroute messages when a path is broken.
-- **Dynamic Topology**: Simulates mobile nodes moving through a field of static sensor nodes.
-- **Packet "Store & Forward"**: Messages are buffered if no immediate route is available and forwarded when a connection is established.
-- **Visual Feedback**: Real-time visualization of packet transmission, signal range, and node states.
+---
 
-### Interactive Web Interface
-- **Real-Time Control**: Pause, resume, and reset the simulation.
-- **Drag & Drop**: Manually move nodes to test network resilience.
-- **Zoom & Pan**: Inspect large networks with intuitive mouse controls.
-- **Customizable Parameters**: Adjust communication range and speed on the fly.
+## 🚀 Live Demo
 
-## 🛠️ Technology Stack
+🔴 **Try it now:**  
+👉 https://akhileshprakash.github.io/self-healing-IOT-mesh-network-/
 
-- **Frontend**: HTML5 Canvas, Vanilla JavaScript (ES6+), CSS3
-- **Backend Simulation**: Python (NetworkX, Matplotlib for optional backend analysis)
+---
 
-## 📦 Installation & Usage
+## 🧠 The Idea
 
-### Web Simulation (Recommended)
-1.  **Online Demo**: [View Live Simulation](https://akhileshprakash.github.io/self-healing-IOT-mesh-network-/)
-2.  **Local**:
-    -   Open `docs/index.html` in your web browser.
+During disasters, traditional communication networks collapse.
 
-### Python Simulation
-1.  Ensure you have Python 3.8+ installed.
-2.  Install dependencies:
-    ```bash
-    pip install networkx matplotlib
-    ```
-3.  Run the main script:
-    ```bash
-    python main.py
-    ```
+This simulation proves that a **mesh of independent wireless nodes** can:
 
-## 🌐 Hosting
+✔ create routes  
+✔ relay messages  
+✔ bypass failures  
+✔ adapt in real time  
 
-This project is configured for **GitHub Pages**.
+and still deliver critical information.
 
-1.  Go to your repository **Settings**.
-2.  Navigate to **Pages** (sidebar).
-3.  Under **Build and deployment** > **Source**, select **Deploy from a branch**.
-4.  Under **Branch**, select `main` and folder `/docs`.
-5.  Click **Save**.
+---
 
-Your site will be live at `https://<username>.github.io/self-healing-IOT-mesh-network-/`.
+## ✨ Features
 
-## 🎮 How to Use
+![Features](images/features.png)
 
-1.  **Launch**: Open the web interface.
-2.  **Interact**:
-    -   **Drag**: Click and drag any node to move it.
-    -   **Zoom/Pan**: Use the mouse wheel to zoom, right-click and drag to pan.
-    -   **Add Nodes**: Use the "Add Node" buttons to expand the network.
-3.  **Observe**: Watch as "Mobile" nodes (blue) traverse the map, connecting to static "Sensor" nodes (cyan) to relay data back to the central "Hub" (purple).
+- 🔁 Self-healing rerouting  
+- 📡 Multi-hop packet transmission  
+- 🧠 Intelligent neighbor discovery  
+- 💾 Store & forward buffering  
+- 🎮 Interactive controls  
+- 📊 Live visual feedback  
 
-## 🤝 Contributing
+---
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+## 📡 Mesh Connectivity
+
+![Mesh](images/mesh.png)
+
+Nodes automatically form links when they enter communication range.  
+The network continuously updates paths to maintain connectivity.
+
+---
+
+## 🔥 Failure & Rerouting
+
+![Rerouting](images/rerouting.png)
+
+If a node goes offline:
+
+⚡ broken routes are detected  
+⚡ new paths are calculated  
+⚡ communication continues  
+
+No human intervention required.
+
+---
+
+## 🖥 Simulation Interface
+
+![Simulation](images/simulation.png)
+
+The web simulator allows you to:
+
+- Drag nodes  
+- Change topology  
+- Observe packet flow  
+- Trigger dynamic reconnections  
+
+Perfect for understanding resilience in distributed systems.
+
+---
+
+## 🛠 Technology Stack
+
+**Frontend**
+- HTML5 Canvas  
+- Vanilla JavaScript (ES6+)  
+- CSS3  
+
+**Network Logic**
+- Graph-based routing  
+- Multi-hop propagation  
+- Failure recovery algorithms  
+
+**Optional Backend Experiments**
+- Python  
+- NetworkX  
+- Matplotlib  
+
+---
+
+## 🎮 How to Use the Demo
+
+1. Open the live link.  
+2. Move nodes around the map.  
+3. Watch connections form & break.  
+4. Observe automatic rerouting.  
+
+Try isolating nodes and see how the network reacts 😉
+
+---
+
+## 🎯 What This Demonstrates
+
+This project highlights practical concepts used in:
+
+- Disaster communication systems  
+- Military/ad-hoc networking  
+- Smart cities  
+- Autonomous coordination  
+- IoT resilience engineering  
+
+---
+
+## 👨‍💻 Author
+
+**Akhilesh Prakash**
+
+- GitHub: https://github.com/AkhileshPrakash  
+
+---
 
 ## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 📞 Contact
-
-Akhilesh Prakash - [GitHub](https://github.com/AkhileshPrakash)
+MIT License
