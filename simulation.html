@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Mesh | Interactive Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            overflow: hidden;
+            /* Full screen app feel */
+            display: flex;
+        }
+
+        #sidebar {
+            width: 300px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--glass-border);
+            height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            overflow-y: auto;
+            /* Enable scroll */
+        }
+
+        #main-view {
+            flex: 1;
+            position: relative;
+            background: #000;
+        }
+
+        #sim-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .panel-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1rem;
+        }
+
+        .control-group {
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .control-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .status-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent-cyan);
+            color: #000;
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: #000;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+        }
+
+        .btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .back-link {
+            margin-top: auto;
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-link:hover {
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside id="sidebar">
+        <div class="panel-header">
+            <h2>Network Control</h2>
+            <p style="font-size: 0.9rem; color: var(--text-secondary);">Manage mesh entities</p>
+        </div>
+
+        <div id="controls-panel">
+            <div class="control-group">
+                <span class="control-label">Global Controls</span>
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                    <button id="btn-pause" class="btn btn-outline" style="flex: 1;">Pause</button>
+                    <button id="btn-reset" class="btn btn-danger" style="flex: 1;">Reset</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <span class="control-label">Parameters</span>
+
+                <div style="margin-bottom: 1rem;">
+                    <label
+                        style="font-size: 0.8rem; color: var(--text-secondary); display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                        Node Count
+                        <input type="number" id="input-nodes" min="0" max="50" value="8"
+                            style="background: transparent; border: 1px solid var(--glass-border); color: #fff; width: 50px; text-align: center; border-radius: 4px;">
+                    </label>
+                    <input type="range" id="param-nodes" min="0" max="50" value="8" style="width: 100%;">
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label
+                        style="font-size: 0.8rem; color: var(--text-secondary); display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                        Mobile Count
+                        <input type="number" id="input-mobiles" min="0" max="20" value="5"
+                            style="background: transparent; border: 1px solid var(--glass-border); color: #fff; width: 50px; text-align: center; border-radius: 4px;">
+                    </label>
+                    <input type="range" id="param-mobiles" min="0" max="20" value="5" style="width: 100%;">
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label
+                        style="font-size: 0.8rem; color: var(--text-secondary); display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                        Range (Max 15km)
+                        <span id="val-range-km">9.0 km</span>
+                    </label>
+                    <input type="range" id="param-range" min="50" max="300" value="180" style="width: 100%;">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <span class="control-label">Selected Entity</span>
+                <div class="status-value" id="sel-name">-</div>
+                <div style="font-size: 0.9rem; margin-top: 0.2rem;" id="sel-type">-</div>
+            </div>
+
+            <div class="control-group">
+                <span class="control-label">Status</span>
+                <div class="status-value" id="sel-status">-</div>
+            </div>
+
+            <div class="control-group">
+                <span class="control-label">Manual Add</span>
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <button id="btn-add-node" class="btn btn-outline" style="flex: 1;">+ Node</button>
+                    <button id="btn-add-mobile" class="btn btn-outline" style="flex: 1;">+ Mobile</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <span class="control-label">Actions</span>
+                <button id="btn-toggle" class="btn btn-outline">Toggle Power</button>
+                <button id="btn-send" class="btn btn-primary" style="display: none;">Send Message</button>
+            </div>
+        </div>
+
+        <a href="index.html" class="back-link">← Back to Overview</a>
+    </aside>
+
+    <main id="main-view">
+        <canvas id="sim-canvas"></canvas>
+
+        <div
+            style="position: absolute; bottom: 20px; right: 20px; color: var(--text-secondary); pointer-events: none; font-size: 0.8rem; text-align: right;">
+            <strong>All Entities:</strong> Draggable<br>
+            <strong>Click</strong> to Select & Control
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/entities.js"></script>
+    <script src="js/simulation_core.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/interaction.js"></script>
+    <script src="js/ui_manager.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sim = new SimulationCore(window.innerWidth - 300, window.innerHeight);
+            const renderer = new Renderer('sim-canvas', sim);
+            const interaction = new InteractionHandler('sim-canvas', sim, renderer);
+
+            // Update logic needs to handle UI
+            const ui = new UIManager(sim, renderer, interaction);
+
+            // Hook UI update into renderer loop? Or separate interval.
+            // UI Manager has its own interval or hook.
+
+            // We need to patch the renderer resize to account for sidebar
+            renderer.resize = function () {
+                this.canvas.width = this.canvas.clientWidth;
+                this.canvas.height = this.canvas.clientHeight;
+                this.sim.width = this.canvas.width;
+                this.sim.height = this.canvas.height;
+            };
+
+            // Hook UI update into animation loop
+            const originalLoop = renderer.loop.bind(renderer);
+            renderer.loop = function () {
+                ui.update();
+                // Draw selection ring
+                originalLoop();
+
+                // Overdraw selection ring
+                if (interaction.selectedEntity) {
+                    const ctx = this.ctx;
+                    const e = interaction.selectedEntity;
+
+                    ctx.save();
+                    ctx.translate(this.panX, this.panY);
+                    ctx.scale(this.zoom, this.zoom);
+
+                    ctx.beginPath();
+                    ctx.arc(e.x, e.y, e.radius + 8, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 2; // Keep line width constant? Or scale? 
+                    // If we scale context, line width scales too. 
+                    // To keep constant screen thickness: ctx.lineWidth = 2 / this.zoom;
+                    ctx.lineWidth = 2 / this.zoom;
+                    ctx.stroke();
+                    ctx.restore();
+
+                    // Draw Label in Screen Space (to keep text size constant and sharp)
+                    ctx.save();
+                    // No transform here, drawing in screen pixels
+
+                    // Project World -> Screen for text position
+                    const screenX = e.x * this.zoom + this.panX;
+                    const screenY = e.y * this.zoom + this.panY;
+                    const screenRadius = e.radius * this.zoom;
+
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '12px Inter';
+                    ctx.textAlign = 'center';
+                    // Position below the circle
+                    ctx.fillText("SELECTED", screenX, screenY - screenRadius - 10);
+                    ctx.restore();
+                }
+            };
+
+            // Expose send button only for correct types
+            const originalUIUpdate = ui.update.bind(ui);
+            ui.update = function () {
+                originalUIUpdate();
+                if (this.selectedEntity && this.selectedEntity.active && this.selectedEntity.type !== 'HUB') {
+                    this.sendBtn.style.display = 'block';
+                } else {
+                    this.sendBtn.style.display = 'none';
+                }
+            };
+        });
+    </script>
+</body>
+
+</html>

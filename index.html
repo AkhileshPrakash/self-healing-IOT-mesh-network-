@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self-Healing IoT Mesh | Disaster Resilience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <canvas id="network-canvas"></canvas>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo"><span>Self Healing</span> IoT Mesh Network</a>
+                <ul class="nav-links">
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#simulation">Simulation</a></li>
+                    <li><a href="https://github.com/AkhileshPrakash/self-healing-IOT-mesh-network-"
+                            target="_blank">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Connectivity When It<br>Matters Most.</h1>
+            <p>A disaster-resilient, self-healing mesh network simulation. Messages find a way, even when infrastructure
+                fails.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="#about" class="cta-button">Learn More</a>
+                <a href="https://github.com/AkhileshPrakash/self-healing-IOT-mesh-network-" target="_blank"
+                    class="cta-button" style="background: transparent; border: 1px solid var(--accent-cyan);">View
+                    Code</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="container split-section">
+        <div class="split-content">
+            <h5
+                style="color: var(--accent-cyan); text-transform: uppercase; font-size: 0.9rem; margin-bottom: 0.5rem; letter-spacing: 1px;">
+                The Problem</h5>
+            <h2>Why We Built This</h2>
+            <p>During natural disasters—earthquakes, floods, or hurricanes—traditional cellular and internet
+                infrastructure often collapses. First responders and trapped victims lose the ability to communicate
+                exactly when they need it most.</p>
+            <p>We need a decentralized solution that doesn't rely on towers, cables, or power grids.</p>
+        </div>
+        <div class="split-visual">
+            <!-- Representing broken connection -->
+            <div style="text-align: center;">
+                <h3 style="color: var(--text-secondary);">Infrastructure Failure</h3>
+                <span style="font-size: 4rem;">📡💥</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="container split-section" style="flex-direction: row-reverse;">
+        <div class="split-content">
+            <h5
+                style="color: var(--accent-purple); text-transform: uppercase; font-size: 0.9rem; margin-bottom: 0.5rem; letter-spacing: 1px;">
+                The Solution</h5>
+            <h2>Intelligent Mesh Networking</h2>
+            <p>Our simulation models a network of independent IoT nodes that automatically discover each other. If one
+                node fails, the network <strong>self-heals</strong> instantly, rerouting messages through alternate
+                paths.</p>
+            <ul style="list-style: none; color: var(--text-secondary);">
+                <li style="margin-bottom: 0.5rem;">✅ No Central Server</li>
+                <li style="margin-bottom: 0.5rem;">✅ Automatic Rerouting</li>
+                <li style="margin-bottom: 0.5rem;">✅ Packet Store & Forward</li>
+            </ul>
+        </div>
+        <div class="split-visual">
+            <!-- Representing connected mesh -->
+            <div style="text-align: center;">
+                <h3 style="color: var(--text-secondary);">Resilient Mesh</h3>
+                <span style="font-size: 4rem;">🕸️✨</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="container">
+        <h2 style="text-align: center; margin-bottom: 4rem;">Key Features</h2>
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-icon">🔄</div>
+                <h3>Self-Healing</h3>
+                <p>Detects node failures in real-time and recalculates routes to ensure message delivery.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">⚡</div>
+                <h3>Multi-Hop Routing</h3>
+                <p>Messages hop from node to node, extending coverage far beyond the range of a single device.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🔍</div>
+                <h3>Neighbor Discovery</h3>
+                <p>Nodes automatically find new neighbors using "Hello" beacons, adapting to movement.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📦</div>
+                <h3>Store & Forward</h3>
+                <p>If no path is available, packets are stored in memory and forwarded once a neighbor appears.</p>
+            </div>
+        </div>
+    </section>
+
+    <main class="container" style="margin-top: 5rem;">
+        <section id="simulation"
+            style="text-align: center; background: var(--bg-secondary); padding: 4rem; border-radius: 1rem; border: 1px solid var(--glass-border);">
+            <h2 style="margin-bottom: 1rem;">Simulation Demo</h2>
+            <p style="margin-bottom: 2rem;">Experience the self-healing mesh behavior in real-time. Drag nodes to
+                reshape the network.</p>
+
+            <div id="sim-container"
+                style="width: 100%; height: 500px; background: #000; border-radius: 0.5rem; overflow: hidden; position: relative;">
+                <canvas id="sim-canvas" style="width: 100%; height: 100%; cursor: crosshair;"></canvas>
+                <div
+                    style="position: absolute; top: 10px; left: 10px; pointer-events: none; color: #fff; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 4px; font-size: 0.8rem;">
+                    Dragging: Enabled (All Entities)<br>
+                    Click Blue Dots (Mobiles) to Send Data
+                </div>
+
+                <!-- Overlay Button -->
+                <div
+                    style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); pointer-events: auto;">
+                    <a href="simulation.html" class="cta-button" style="box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                        🚀 Launch Control Panel
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 IoT Mesh SIm Project. Built with <span style="color: var(--accent-purple);">♥</span> for
+                resilience.</p>
+            <p style="font-size: 0.9rem; margin-top: 1rem;">
+                <a href="#">Documentation</a> | <a href="#">Research Paper</a> | <a
+                    href="https://github.com/AkhileshPrakash">Contact</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Core Website Script -->
+    <script src="script.js"></script>
+
+    <!-- Interactive Simulation Scripts -->
+    <script src="js/entities.js"></script>
+    <script src="js/simulation_core.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/interaction.js"></script>
+
+    <script>
+        // Initialize the interactive simulation when the DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('sim-canvas');
+            if (canvas) {
+                // Determine size from container
+                const container = canvas.parentElement;
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+
+                // Initialize Core
+                const sim = new SimulationCore(width, height);
+
+                // Initialize Renderer
+                const renderer = new Renderer('sim-canvas', sim);
+
+                // Initialize Interaction (Pass renderer for zoom/pan support)
+                const interaction = new InteractionHandler('sim-canvas', sim, renderer);
+
+                // Auto-populate with a demo scene if empty (SimulationCore usually does 1 Hub + 8 Nodes + 5 Mobiles by default)
+                // We can add a simple loop to ensure animation runs smoothly without UI manager
+
+                // Hook into animation loop updates
+                const originalLoop = renderer.loop.bind(renderer);
+                renderer.loop = function () {
+                    // Update simulation logic (movement, connections, packets)
+                    sim.update();
+
+                    // Render frame
+                    originalLoop();
+                };
+
+                // Handle resize
+                window.addEventListener('resize', () => {
+                    const w = container.clientWidth;
+                    const h = container.clientHeight;
+                    renderer.canvas.width = w;
+                    renderer.canvas.height = h;
+                    sim.width = w;
+                    sim.height = h;
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
