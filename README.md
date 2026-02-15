@@ -1,6 +1,6 @@
 # Self-Healing IoT Mesh Network Simulation
 
-![Network Simulation](website/images/preview.png)
+![Network Simulation](images/preview.png)
 
 A comprehensive simulation of a decentralized, self-healing IoT mesh network. This project visualizes how independent nodes can communicate, discover routes, and maintain connectivity even when individual nodes fail or move.
 
