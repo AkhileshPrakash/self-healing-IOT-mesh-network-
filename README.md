@@ -11,7 +11,7 @@ This project demonstrates how disaster-ready IoT devices can maintain communicat
 ## 🚀 Live Demo
 
 🔴 **Try it now:**  
-👉 https://akhileshprakash.github.io/self-healing-IOT-mesh-network-/
+👉 **Online Demo**: [View Live Simulation](https://akhileshprakash.github.io/self-healing-IOT-mesh-network-/)
 
 ---
 
