@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>IoT Mesh | Interactive Control</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -31,6 +31,35 @@
             flex: 1;
             position: relative;
             background: #000;
+        }
+        
+        /* Mobile Menu Button */
+        #menu-toggle {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 50;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: none; /* Hidden on desktop */
+        }
+        
+        #menu-close {
+            display: none; /* Hidden on desktop */
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            #menu-toggle {
+                display: block;
+            }
+            #menu-close {
+                display: block;
+            }
         }
 
         #sim-canvas {
@@ -122,6 +151,7 @@
 <body>
 
     <aside id="sidebar">
+        <button id="menu-close" class="btn btn-outline">✕ Close Menu</button>
         <div class="panel-header">
             <h2>Network Control</h2>
             <p style="font-size: 0.9rem; color: var(--text-secondary);">Manage mesh entities</p>
@@ -199,6 +229,7 @@
     </aside>
 
     <main id="main-view">
+        <button id="menu-toggle">☰ Menu</button>
         <canvas id="sim-canvas"></canvas>
 
         <div
@@ -217,22 +248,37 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const sim = new SimulationCore(window.innerWidth - 300, window.innerHeight);
+            const sim = new SimulationCore(window.innerWidth - 300, window.innerHeight); // Default desktop width
             const renderer = new Renderer('sim-canvas', sim);
             const interaction = new InteractionHandler('sim-canvas', sim, renderer);
 
             // Update logic needs to handle UI
             const ui = new UIManager(sim, renderer, interaction);
 
-            // Hook UI update into renderer loop? Or separate interval.
-            // UI Manager has its own interval or hook.
+            // Mobile Menu Logic
+            const menuToggle = document.getElementById('menu-toggle');
+            const menuClose = document.getElementById('menu-close');
+            const sidebar = document.getElementById('sidebar');
+
+            function toggleMenu() {
+                sidebar.classList.toggle('open');
+            }
+
+            menuToggle.addEventListener('click', toggleMenu);
+            menuClose.addEventListener('click', toggleMenu);
 
             // We need to patch the renderer resize to account for sidebar
+            // On mobile, sidebar is overlay, so full width
             renderer.resize = function () {
                 this.canvas.width = this.canvas.clientWidth;
                 this.canvas.height = this.canvas.clientHeight;
                 this.sim.width = this.canvas.width;
                 this.sim.height = this.canvas.height;
+                
+                // Adjust for desktop sidebar if not mobile
+                if (window.innerWidth > 768) {
+                    // Sim width is handled by CSS layout (flex), but let's ensure sim core knows
+                }
             };
 
             // Hook UI update into animation loop

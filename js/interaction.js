@@ -16,16 +16,22 @@ class InteractionHandler {
         this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e));
         this.canvas.addEventListener('mouseup', (e) => this.onMouseUp(e));
         this.canvas.addEventListener('wheel', (e) => this.onWheel(e));
-        this.canvas.addEventListener('contextmenu', (e) => e.preventDefault()); // Disable context menu
+        // Touch Listeners
+        this.canvas.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
+        this.canvas.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
+        this.canvas.addEventListener('touchend', (e) => this.onTouchEnd(e));
+        this.canvas.addEventListener('touchcancel', (e) => this.onTouchEnd(e));
+
+        // Touch State
+        this.initialPinchDist = null;
+        this.lastTouchX = 0;
+        this.lastTouchY = 0;
     }
 
-    getMousePos(e) {
+    getTouchPos(touch) {
         const rect = this.canvas.getBoundingClientRect();
-        const screenX = e.clientX - rect.left;
-        const screenY = e.clientY - rect.top;
-
-        // Transform to World Coordinates
-        // world = (screen - pan) / zoom
+        const screenX = touch.clientX - rect.left;
+        const screenY = touch.clientY - rect.top;
         return {
             x: (screenX - this.renderer.panX) / this.renderer.zoom,
             y: (screenY - this.renderer.panY) / this.renderer.zoom,
@@ -34,120 +40,111 @@ class InteractionHandler {
         };
     }
 
-    onWheel(e) {
+    onTouchStart(e) {
         e.preventDefault();
-        const zoomIntensity = 0.1;
-        const wheel = e.deltaY < 0 ? 1 : -1;
-        const zoomFactor = Math.exp(wheel * zoomIntensity);
+        if (e.touches.length === 1) {
+            // Single touch: Drag or Select
+            const touch = e.touches[0];
+            const pos = this.getTouchPos(touch);
 
-        // Zoom towards mouse pointer
-        const pos = this.getMousePos(e);
-        const wx = pos.x; // World X before zoom
-        const wy = pos.y; // World Y before zoom
-
-        const newZoom = this.renderer.zoom * zoomFactor;
-
-        // Clamping zoom
-        if (newZoom < 0.1 || newZoom > 5) return;
-
-        this.renderer.zoom = newZoom;
-
-        // Adjust Pan to keep world point under mouse stable
-        // screen = world * newZoom + newPan
-        // newPan = screen - world * newZoom
-        this.renderer.panX = pos.screenX - wx * newZoom;
-        this.renderer.panY = pos.screenY - wy * newZoom;
-    }
-
-    onMouseDown(e) {
-        e.preventDefault();
-        const pos = this.getMousePos(e); // World pos
-
-        // Right Click (button 2) -> Pan
-        if (e.button === 2) {
-            this.isPanning = true;
-            this.lastMouseX = pos.screenX;
-            this.lastMouseY = pos.screenY;
-            this.canvas.style.cursor = 'grabbing';
-            return;
-        }
-
-        // Left Click -> Select/Drag Entity
-        let clicked = null;
-
-        // Find clicked entity (reverse order to find top-most)
-        for (let i = this.sim.entities.length - 1; i >= 0; i--) {
-            const entity = this.sim.entities[i];
-            const dist = Math.sqrt((pos.x - entity.x) ** 2 + (pos.y - entity.y) ** 2);
-            if (dist < entity.radius / this.renderer.zoom + 5) { // Hitbox check in world space
-                // simple dist check is fine as pos.x/y are world coords
-                if (dist < entity.radius) {
-                    clicked = entity;
-                    break;
-                }
-            }
-        }
-
-        if (clicked) {
-            this.selectedEntity = clicked;
-            if (clicked.active) {
-                this.draggedEntity = clicked;
-                clicked.isDragging = true;
-                clicked.vx = 0;
-                clicked.vy = 0;
-            }
-        } else {
-            this.selectedEntity = null;
-        }
-    }
-
-    onMouseMove(e) {
-        // Panning
-        if (this.isPanning) {
-            const currentX = e.clientX; // We can use raw client or relative screen
-            // actually getMousePos gives screenX relative to canvas
-            const pos = this.getMousePos(e);
-            const dx = pos.screenX - this.lastMouseX;
-            const dy = pos.screenY - this.lastMouseY;
-
-            this.renderer.panX += dx;
-            this.renderer.panY += dy;
-
-            this.lastMouseX = pos.screenX;
-            this.lastMouseY = pos.screenY;
-            return;
-        }
-
-        // Dragging Entity
-        if (this.draggedEntity) {
-            const pos = this.getMousePos(e); // World coords
-            // No strict bounds check on drag needed, or check against sim width/height
-            // Let's keep bounds logic but in world coords
-            this.draggedEntity.x = Math.max(this.draggedEntity.radius, Math.min(this.sim.width - this.draggedEntity.radius, pos.x));
-            this.draggedEntity.y = Math.max(this.draggedEntity.radius, Math.min(this.sim.height - this.draggedEntity.radius, pos.y));
-        } else {
-            // Hover
-            const pos = this.getMousePos(e);
-            let hovering = false;
-            for (let entity of this.sim.entities) {
+            // Re-use mouse logic for selection
+            let clicked = null;
+            for (let i = this.sim.entities.length - 1; i >= 0; i--) {
+                const entity = this.sim.entities[i];
                 const dist = Math.sqrt((pos.x - entity.x) ** 2 + (pos.y - entity.y) ** 2);
-                if (dist < entity.radius) {
-                    hovering = true;
-                    break;
+                if (dist < entity.radius / this.renderer.zoom + 15) { // Larger hit area for touch
+                    if (dist < entity.radius + 10) {
+                        clicked = entity;
+                        break;
+                    }
                 }
             }
-            this.canvas.style.cursor = hovering ? 'pointer' : 'default';
+
+            if (clicked) {
+                this.selectedEntity = clicked;
+                if (clicked.active) {
+                    this.draggedEntity = clicked;
+                    clicked.isDragging = true;
+                    clicked.vx = 0;
+                    clicked.vy = 0;
+                }
+            } else {
+                this.selectedEntity = null;
+                // If background clicked, prepare for pan
+                this.isPanning = true;
+                this.lastTouchX = pos.screenX;
+                this.lastTouchY = pos.screenY;
+            }
+        } else if (e.touches.length === 2) {
+            // Pinch Zoom Start
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            this.initialPinchDist = Math.sqrt(dx * dx + dy * dy);
         }
     }
 
-    onMouseUp(e) {
-        if (this.isPanning) {
-            this.isPanning = false;
-            this.canvas.style.cursor = 'default';
+    onTouchMove(e) {
+        e.preventDefault();
+        if (e.touches.length === 1) {
+            const touch = e.touches[0];
+            const pos = this.getTouchPos(touch);
+
+            if (this.draggedEntity) {
+                // Dragging
+                this.draggedEntity.x = Math.max(this.draggedEntity.radius, Math.min(this.sim.width - this.draggedEntity.radius, pos.x));
+                this.draggedEntity.y = Math.max(this.draggedEntity.radius, Math.min(this.sim.height - this.draggedEntity.radius, pos.y));
+            } else if (this.isPanning) {
+                // Panning
+                const dx = pos.screenX - this.lastTouchX;
+                const dy = pos.screenY - this.lastTouchY;
+                this.renderer.panX += dx;
+                this.renderer.panY += dy;
+                this.lastTouchX = pos.screenX;
+                this.lastTouchY = pos.screenY;
+            }
+        } else if (e.touches.length === 2 && this.initialPinchDist) {
+            // Pinch Zoom
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            const currentDist = Math.sqrt(dx * dx + dy * dy);
+
+            if (currentDist > 0) {
+                const scale = currentDist / this.initialPinchDist;
+                const newZoom = this.renderer.zoom * scale;
+                // Clamp zoom
+                if (newZoom >= 0.1 && newZoom <= 5) {
+                    // Center of pinch
+                    const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                    const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                    const rect = this.canvas.getBoundingClientRect();
+                    const screenX = centerX - rect.left;
+                    const screenY = centerY - rect.top;
+
+                    // Compute world pos before zoom
+                    const wx = (screenX - this.renderer.panX) / this.renderer.zoom;
+                    const wy = (screenY - this.renderer.panY) / this.renderer.zoom;
+
+                    this.renderer.zoom = newZoom;
+
+                    // Adjust pan
+                    this.renderer.panX = screenX - wx * newZoom;
+                    this.renderer.panY = screenY - wy * newZoom;
+
+                    this.initialPinchDist = currentDist; // Reset for smooth continuous zoom
+                }
+            }
         }
+    }
+
+    onTouchEnd(e) {
+        e.preventDefault();
         if (this.draggedEntity) {
             this.draggedEntity.isDragging = false;
             this.draggedEntity = null;
+        }
+        this.isPanning = false;
+        if (e.touches.length < 2) {
+            this.initialPinchDist = null;
         }
     }
 
@@ -176,13 +173,6 @@ class InteractionHandler {
                 found = true;
                 break;
             }
-
-            // Neighbors
-            // We need to use the computed connections from SIM core
-            // But simulation updates connections every frame.
-
-            // Note: SimulationCore.updateConnections() populates .connections array
-            // We use that graph.
 
             current.connections.forEach(neighbor => {
                 if (!visited.has(neighbor) && neighbor.active) { // Only route through active nodes
