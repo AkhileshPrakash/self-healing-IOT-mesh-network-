@@ -21,8 +21,12 @@ body {
     font-family: var(--font-main);
     background-color: var(--bg-primary);
     color: var(--text-primary);
+    color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+    /* Offset for fixed header */
 }
 
 /* Animations */
@@ -326,6 +330,34 @@ input[type=range]:focus {
         flex-direction: column;
     }
 
+    /* Adjust header for mobile */
+    header {
+        padding: 0.5rem 0;
+    }
+
+    nav {
+        flex-direction: row;
+        /* Keep row for logo and menu button */
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        font-size: 1.25rem;
+        /* Revert to row for better alignment, or stack if really narrow */
+        flex-direction: row;
+        align-items: center;
+        width: auto;
+        line-height: 1.2;
+    }
+
+    /* Wrap logo text if screen is very narrow */
+    .logo span {
+        display: inline-block;
+        margin-right: 4px;
+    }
+
+    /* Sidebar logic */
     #sidebar {
         position: fixed;
         width: 100%;
@@ -334,9 +366,15 @@ input[type=range]:focus {
         top: 0;
         transition: left 0.3s ease-in-out;
         z-index: 2000;
-        /* Above everything */
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(10px);
+        background: rgba(15, 23, 42, 0.98);
+        /* Less transparent for better readability */
+        backdrop-filter: blur(15px);
+        display: flex;
+        /* Flex to center content */
+        flex-direction: column;
+        justify-content: center;
+        /* Center items vertically */
+        padding: 2rem;
     }
 
     #sidebar.open {
@@ -349,9 +387,11 @@ input[type=range]:focus {
     }
 
     .btn {
-        padding: 1rem;
-        /* Larger touch targets */
+        padding: 0.8rem 1.2rem;
         font-size: 1rem;
+        width: 100%;
+        /* Full width buttons in mobile control panel */
+        margin-bottom: 0.5rem;
     }
 
     input[type=range]::-webkit-slider-thumb {
@@ -363,39 +403,70 @@ input[type=range]:focus {
     .back-link {
         padding: 1rem 0;
         font-size: 1.1rem;
+        display: block;
+        width: 100%;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        margin-bottom: 2rem;
     }
 
-    /* Fix for split sections */
+    /* Fix for split sections overlap - simplified */
     .split-section {
+        display: flex;
         flex-direction: column;
         gap: 2rem;
-        /* Reduce gap on mobile */
+        padding: 2rem 0;
+        height: auto !important;
+        /* Force auto height */
+    }
+
+    .split-content {
+        flex: 0 0 auto;
+        width: 100%;
+        order: 2;
+        /* Content second */
     }
 
     .split-visual {
-        height: 250px;
-        /* Smaller visual on mobile */
-        order: -1;
-        /* Visual first on mobile? Or keep as is. Let's keep as is (stack text then visual) unless we want visual first. 
-                      Standard is usually visual first. Let's try order: -1 to put image on top. */
+        flex: 0 0 auto;
         width: 100%;
+        min-height: 200px;
+        /* Reduces minimum height */
+        height: auto;
+        order: 1;
+        /* Visual first */
+        margin-bottom: 0;
+    }
+
+    /* Fix typography scaling */
+    .hero {
+        padding-top: 100px;
+        /* More space for fixed header */
+        align-items: flex-start;
+        /* Align top for better mobile view */
+        padding-bottom: 2rem;
+    }
+
+    .hero-content {
+        padding: 0 1rem;
     }
 
     .hero p {
-        font-size: 1.1rem;
+        font-size: 1rem;
+        line-height: 1.5;
     }
 
     h1 {
-        font-size: 2.2rem;
-        /* Smaller H1 */
+        font-size: 2rem;
+        /* Reduced size */
+        margin-bottom: 1rem;
+        word-wrap: break-word;
+        /* Prevent overflow */
     }
 
-    .logo {
-        font-size: 1.2rem;
-        /* Smaller Logo */
-        flex-direction: column;
-        /* Stack logo text if needed or allow wrap */
-        align-items: flex-start;
+    h2 {
+        font-size: 1.75rem;
     }
 }
 
